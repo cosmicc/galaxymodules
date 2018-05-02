@@ -4,6 +4,7 @@ import os
 import sys
 import time
 import fcntl
+import logging
 import atexit
 
 log = logging.getLogger(__name__)
