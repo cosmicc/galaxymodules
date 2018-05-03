@@ -18,6 +18,14 @@ from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL, Signals
 
 log = logging.getLogger(__name__)
 
+def ispid_running(pid):
+    try:
+        os.kill(pid, 0)
+    except OSError:
+        return False
+    return True
+
+
 def kill_all(name):
     allpids = get_pids(name)
     if len(allpids) == 0:

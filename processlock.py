@@ -55,5 +55,13 @@ def unlock():
 	#if os.path.isfile(lockfile):
 	#	os.remove(lockfile)
 
-lockfile = '/run/{}.lock'.format(cleanName(sys.argv[0]))
+if os.path.isdir('/run'):
+	lpath = '/run'
+elif os.path.isdir('/var/tmp'):
+	lpath = '/var/tmp'
+else:
+	log.critical('Cannot find a valid place to put the lockfile. Exiting')
+	exit(1)
+ 
+lockfile = '{}/{}.lock'.format(lpath,cleanName(sys.argv[0]))
 lock_handle = open(lockfile, 'w')
