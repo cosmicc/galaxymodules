@@ -1,13 +1,15 @@
 #!/usr/bin/python2
 
+import logging
 import urllib
 import urllib2
 import json
 
 log = logging.getLogger(__name__)
 
-def pushover(app_key,title='', msg=''):
-    user_key='ut5A4ejy2dY6HgVBeEaouYHw6uUFpH'
+
+def pushover(app_key, title='', msg=''):
+    user_key = 'ut5A4ejy2dY6HgVBeEaouYHw6uUFpH'
     config = {
     'api': 'https://api.pushover.net/1/messages.json',
     'user': user_key,
@@ -35,4 +37,3 @@ def pushover(app_key,title='', msg=''):
         log.info('Pushover notification successfully sent')
     else:
         log.error('Pushover notification failed')
-

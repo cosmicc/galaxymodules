@@ -54,7 +54,8 @@ ICMP_ECHOREPLY = 0  # Echo reply (per RFC792)
 ICMP_ECHO = 8  # Echo request (per RFC792)
 ICMP_MAX_RECV = 2048  # Max size of incoming buffer
 
-MAX_SLEEP = 1000 # ms between checks
+MAX_SLEEP = 1000  # ms between checks
+
 
 def calculate_checksum(source_string):
     """
@@ -120,7 +121,7 @@ def to_ip(addr):
         log.error('Could not convert {} to ip'.format(addr))
         return '0'
     else:
-        log.debug('Converted address {} to {}'.format(addr,resaddr))
+        log.debug('Converted address {} to {}'.format(addr, resaddr))
         return resaddr
 
 
@@ -309,7 +310,7 @@ class Ping(object):
             if deadline and self.total_time >= deadline:
                 break
 
-            if delay == None:
+            if delay is None:
                 delay = 0
 
             # Pause for the remainder of the MAX_SLEEP period (if applicable)
@@ -346,7 +347,7 @@ class Ping(object):
             raise  # raise the original error
 
         send_time = self.send_one_ping(current_socket)
-        if send_time == None:
+        if send_time is None:
             return
         self.send_count += 1
 
@@ -458,6 +459,7 @@ def ping(hostname, timeout=1000, count=3, packet_size=55, *args, **kwargs):
     log.debug('Pinging host: {}'.format(hostname))
     return p.run(count)
 
+
 '''
 def externalip():
     try:
@@ -469,19 +471,20 @@ def externalip():
         return false
 '''
 
+
 def internet_speedtest(mode=False):
     try:
         servers = []
         s = speedtest.Speedtest()
         s.get_servers(servers)
         s.get_best_server()
-        if mode == False:
+        if mode is False:
             s.download()
             s.upload()
         s.results.share()
         return_dict = {}
         results_dict = s.results.dict()
-        if mode == False:
+        if mode is False:
             return_dict['dlspeed'] = int(results_dict['download'] / 1000)
             return_dict['ulspeed'] = int(results_dict['upload'] / 1000)
         return_dict['ping'] = results_dict['ping']
@@ -499,9 +502,11 @@ def internet_speedtest(mode=False):
     else:
         return return_dict
 
+
 def internet_info():
     return_dict = internet_speedtest(True)
     return return_dict
+
 
 class isup:
     def host_osping(host):
@@ -520,7 +525,7 @@ class isup:
             return False
 
     def host_udp(host):
-        g = ping(host, udp = True)
+        g = ping(host, udp=True)
         if g.ret_code == 0:
             log.debug('host_udp successfull to host {}'.format(host))
             return True
@@ -529,7 +534,7 @@ class isup:
             return False
 
     def host_icmp(host):
-        g = ping(host, udp = False)
+        g = ping(host, udp=False)
         if g.ret_code == 0:
             log.debug('host_icmp successfull to host {}'.format(host))
             return True
@@ -542,10 +547,10 @@ class isup:
         try:
             s.connect((to_ip(host), int(port)))
             s.shutdown(2)
-            log.debug('host_port successfull to host {} on port {}'.format(host,port))
+            log.debug('host_port successfull to host {} on port {}'.format(host, port))
             return True
         except:
-            log.debug('host_port failed to host {} on port {}'.format(host,port))
+            log.debug('host_port failed to host {} on port {}'.format(host, port))
             return False
 
     def internet():
@@ -565,7 +570,7 @@ class isup:
             return False
 
     def icmpout():
-        if isup.host_icmp('8.8.8.8') == True:
+        if isup.host_icmp('8.8.8.8') is True:
             log.debug('ICMP out check returned TRUE')
             return True
         else:
@@ -578,40 +583,43 @@ def getip_from_host(d):
         data = socket.gethostbyname(d)
         ip = repr(data)
         ip = ip.replace('\'', '')
-        log.debug('getip_from_host successful. {} > {}'.format(d,ip))
+        log.debug('getip_from_host successful. {} > {}'.format(d, ip))
         return ip
     except Exception:
         log.warning('getip_from_host failed for host [{}]'.format(d))
         return False
 
+
 def getips_from_domain(d):
     try:
         data = socket.gethostbyname_ex(d)
         ipx = repr(data[2])
-        log.debug('getips_from_domain successful. {} > {}'.format(d,ipx))
+        log.debug('getips_from_domain successful. {} > {}'.format(d, ipx))
         return ipx
     except Exception:
         log.warning('getips_from_domain failed for host [{}]'.format(d))
         return False
+
 
 def gethost_from_ip(ip):
     try:
         data = socket.gethostbyaddr(ip)
         host = repr(data[0])
         host = host.replace('\'', '')
-        log.debug('gethost_from_ip successful. {} > {}'.format(ip,host))
+        log.debug('gethost_from_ip successful. {} > {}'.format(ip, host))
         return host
     except Exception:
         log.warning('gethost_from_ip failed on ip [{}]'.format(ip))
         return False
 
+
 def getalias_from_domain(d):
     try:
         data = socket.gethostbyname_ex(d)
         alias = repr(data[1])
-        #alias = repr(data)
+        # alias = repr(data)
         print(repr(data))
-        log.debug('getalias_from_domain successful. {} > {}'.format(d,alias))
+        log.debug('getalias_from_domain successful. {} > {}'.format(d, alias))
         return alias
     except Exception:
         log.warning('getalias_from_domain failed on doamin [{}]'.format(d))
