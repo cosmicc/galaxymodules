@@ -19,8 +19,8 @@
 
 import sys
 import os
-import time
 import logging
+from configparser import ConfigParser
 from zlib import crc32
 
 import dill
@@ -33,7 +33,11 @@ __version__ = "1.0.2"
 __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
+configfile = '/etc/galaxymediatools.cfg'
+
 log = logging.getLogger(__name__)
+config = ConfigParser()
+config.read(configfile)
 
 def cachetofile(dilldata, dillfile):
     try:
@@ -41,12 +45,13 @@ def cachetofile(dilldata, dillfile):
             dill.dump(dilldata, fp)
     except:
         log.error('Serialization to file failed: {}'.format(dillfile))
-        return false
+        return False
     else:
         log.debug('Serialization to file completed: {}'.format(dillfile))
-        return true
+        return True
     finally:
         dillfile.close()
+
 
 def cachefromfile(dillfile):
     try:
@@ -61,9 +66,10 @@ def cachefromfile(dillfile):
     finally:
         dillfile.close()
 
+
 def pushover(app_key, ptitle, message):
     try:
-        client = Client('ut5A4ejy2dY6HgVBeEaouYHw6uUFpH', api_token=app_key)
+        client = Client(config.get('pushover', 'user_key'), api_token=app_key)
         client.send_message(message, title=ptitle)
     except Exception as e:
         log.error('Pushover notification failed. Error: %s' % str(e))
@@ -72,8 +78,9 @@ def pushover(app_key, ptitle, message):
         log.debug('Pushover notification sent. Title: {}'.format(ptitle))
         return True
 
+
 def whatosami(detail):
-    if detail == True:
+    if detail is True:
         if sys.platform.startswith('win32'):
             log.debug('Windows platform detected.')
             return 'windows'
@@ -100,7 +107,8 @@ def whatosami(detail):
             log.warning('Could not determine OS type')
             return 'unknown'
 
-def elapsedTime(start_time, stop_time,lshort=False):
+
+def elapsedTime(start_time, stop_time, lshort=False):
     diff_time = stop_time - start_time
     days = diff_time.days
     if days == 1:
@@ -110,49 +118,50 @@ def elapsedTime(start_time, stop_time,lshort=False):
     total_secs = diff_time.seconds
     seconds = total_secs % 60
     if seconds == 1:
-        if lshort == False:
+        if lshort is False:
             secstring = 'Second'
         else:
             secstring = 'Sec'
     else:
-        if lshort == False:
+        if lshort is False:
             secstring = 'Seconds'
         else:
             secstring = 'Secs'
     total_min = total_secs / 60
     minutes = int(total_min % 60)
     if minutes == 1:
-        if lshort == False:
+        if lshort is False:
             minstring = 'Minute'
         else:
             minstring = 'Min'
     else:
-        if lshort == False:
+        if lshort is False:
             minstring = 'Minutes'
         else:
             minstring = 'Mins'
     hours = int(total_min / 60)
     if hours == 1:
-        if lshort == False:
+        if lshort is False:
             hourstring = 'Hour'
         else:
             hourstring = 'Hr'
     else:
-        if lshort == False:
+        if lshort is False:
             hourstring = 'Hours'
         else:
             hourstring = 'Hrs'
     if days != 0:
-        return('{} {}, {} {}, {} {}'.format(days,daystring,hours,hourstring,minutes,minstring))
+        return('{} {}, {} {}, {} {}'.format(days, daystring, hours, hourstring, minutes, minstring))
     elif hours != 0:
-        return('{} {}, {} {}'.format(hours,hourstring,minutes,minstring))
+        return('{} {}, {} {}'.format(hours, hourstring, minutes, minstring))
     elif minutes != 0:
-        return('{} {}, {} {}'.format(minutes,minstring,seconds,secstring))
+        return('{} {}, {} {}'.format(minutes, minstring, seconds, secstring))
     elif minutes == 0:
-        return('{} {}'.format(seconds,secstring))
+        return('{} {}'.format(seconds, secstring))
     else:
         log.error('Elapsed time function failed. Could not convert.')
         return('Error')
+
 
 def crc32_of_string(data):
     if isinstance(data, str):
@@ -163,6 +172,7 @@ def crc32_of_string(data):
         raise ValueError('crc32_of_string recieved non-string as data')
         log.exception('crc32_of_string recieved non-string as data: {}'.format(data))
         exit()
+
 
 def crc32_compare_string(data, crc):
     if not isinstance(crc, int):
@@ -184,9 +194,10 @@ def crc32_compare_string(data, crc):
             log.exception('crc32_compare_string recieved non-string as data: {}'.format(data))
             exit()
 
+
 def crc32_from_file(filename):
     try:
-        fd = open(filename,"rb")
+        fd = open(filename, "rb")
         content = fd.readlines()
     except IOError:
         log.exception('crc32_from_file error. Cannont open file {}'.format(filename))
@@ -208,7 +219,7 @@ def crc32_compare_file(filename, crc):
         exit()
     else:
         try:
-            fd = open(filename,"rb")
+            fd = open(filename, "rb")
             content = fd.readlines()
         except IOError:
             log.exception('crc32_compare_file error. Cannont open file {}'.format(filename))
@@ -227,6 +238,7 @@ def crc32_compare_file(filename, crc):
                 log.debug('crc32_compare_file completed and returned TRUE')
                 return True
 
+
 def float_trunc_1dec(num):
     try:
         tnum = num // 0.1 / 10
@@ -236,6 +248,7 @@ def float_trunc_1dec(num):
     else:
         return tnum
 
+
 def float_trunc_2dec(num):
     try:
         tnum = num // 0.01 / 100
@@ -244,6 +257,7 @@ def float_trunc_2dec(num):
         return False
     else:
         return tnum
+
 
 def diskspace(path):
     if not os.path.exists(path):
@@ -257,7 +271,7 @@ def diskspace(path):
                 fsbytes = osstatvfs.f_frsize * osstatvfs.f_blocks     # Size of filesystem in bytes
                 fsfree = osstatvfs.f_frsize * osstatvfs.f_bavail     # Number of free bytes that ordinary users
                 fsmb = fsbytes / 1000000  # convert to MB
-                fsmbfree = fsfree / 1000000 # conver to MB
+                fsmbfree = fsfree / 1000000  # convert to MB
                 fskb = fsbytes / 1000
                 fskbfree = fsfree / 1000
                 fsgb = fsbytes / 1000000000

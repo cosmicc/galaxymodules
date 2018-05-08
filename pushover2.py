@@ -1,14 +1,20 @@
 #!/usr/bin/python2
 
+import logging
 import urllib
 import urllib2
+from configparser import ConfigParser
 import json
 import logging
 
-log = logging.getLogger(__name__)
+configfile = '/etc/galaxymediatools.cfg'
 
-def pushover(app_key,title='', msg=''):
-    user_key='ut5A4ejy2dY6HgVBeEaouYHw6uUFpH'
+log = logging.getLogger(__name__)
+config = ConfigParser()
+config.read(configfile)
+
+def pushover(app_key, title='', msg=''):
+    user_key = config.get('pushover', 'user_key')
     config = {
     'api': 'https://api.pushover.net/1/messages.json',
     'user': user_key,
@@ -36,4 +42,3 @@ def pushover(app_key,title='', msg=''):
         log.info('Pushover notification successfully sent')
     else:
         log.error('Pushover notification failed')
-
