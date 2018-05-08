@@ -20,6 +20,7 @@
 import sys
 import os
 import logging
+from configparser import ConfigParser
 from zlib import crc32
 
 import dill
@@ -32,8 +33,11 @@ __version__ = "1.0.2"
 __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
-log = logging.getLogger(__name__)
+configfile = '/opt/galaxymodules/galaxymediatools.cfg'
 
+log = logging.getLogger(__name__)
+config = ConfigParser()
+config.read(configfile)
 
 def cachetofile(dilldata, dillfile):
     try:
@@ -65,7 +69,7 @@ def cachefromfile(dillfile):
 
 def pushover(app_key, ptitle, message):
     try:
-        client = Client('ut5A4ejy2dY6HgVBeEaouYHw6uUFpH', api_token=app_key)
+        client = Client(config.get('pushover', 'user_key'), api_token=app_key)
         client.send_message(message, title=ptitle)
     except Exception as e:
         log.error('Pushover notification failed. Error: %s' % str(e))
