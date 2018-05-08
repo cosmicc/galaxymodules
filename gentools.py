@@ -33,7 +33,7 @@ __version__ = "1.0.2"
 __maintainer__ = "Ian Perry"
 __email__ = "ianperry99@gmail.com"
 
-configfile = '/opt/galaxymodules/galaxymediatools.cfg'
+configfile = '/etc/galaxymediatools.cfg'
 
 log = logging.getLogger(__name__)
 config = ConfigParser()

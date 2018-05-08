@@ -6,7 +6,7 @@ import urllib2
 from configparser import ConfigParser
 import json
 
-configfile = '/opt/galaxymodules/galaxymediatools.cfg'
+configfile = '/etc/galaxymediatools.cfg'
 
 log = logging.getLogger(__name__)
 config = ConfigParser()

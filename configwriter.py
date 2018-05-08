@@ -2,7 +2,7 @@
 
 from configparser import ConfigParser
 
-configfile = './confi'
+configfile = './config.cfg'
 
 config = ConfigParser()
 

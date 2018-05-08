@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 
-configfile = './galaxymediatools.conf'
+configfile = '/etc/galaxymediatools.cfg'
 
 #log = logging.getLogger(__name__)
 config = ConfigParser()
